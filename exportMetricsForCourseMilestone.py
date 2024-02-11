@@ -31,8 +31,6 @@ if __name__ == "__main__":
     if len(sys.argv) < 2:
         exit(0)
     _, course_config_file, *_ = sys.argv
-    # idk why this isn't working, so hardcode for now. Kinda had to anyway cuz managers are hard coded rn
-    # teams = get_teams(org)
     with open(course_config_file) as course_config:
         course_data = json.load(course_config)
     organization = course_data["organization"]
