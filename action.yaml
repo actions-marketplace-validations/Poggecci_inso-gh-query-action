@@ -25,4 +25,4 @@ runs:
       run: python ./entrypoint.py
       shell: bash
       env:
-        GITHUB_TOKEN: ${{ inputs.gh-api-token }}
+        GITHUB_API_TOKEN: ${{ inputs.gh-api-token }}
