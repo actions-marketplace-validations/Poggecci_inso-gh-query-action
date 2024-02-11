@@ -8,8 +8,8 @@ from getTeamMembers import get_team_members
 
 
 def main():
-    config_file = os.getenv("INPUT_CONFIG-FILE")
-    gh_api_token = os.getenv("INPUT_GH-API-TOKEN")
+    config_file = os.getenv("CONFIG_FILE")
+    gh_api_token = os.getenv("GH_API_TOKEN")
 
     if not gh_api_token:
         print("GitHub API token is required.")
@@ -53,8 +53,11 @@ def main():
             endDate=endDate,
             useDecay=useDecay,
         )
+        workspace_path = "/github/workspace"
+        # Combine the workspace path with the CSV file name
+        csv_file_path = f"{workspace_path}/{teamdata['milestone']}-{team}-{organization}.csv"
         write_milestone_data_to_csv(
-            team_metrics[team], f"{teamdata['milestone']}-{team}-{organization}.csv"
+            team_metrics[team], csv_file_path
         )
 
 
