@@ -1,0 +1,28 @@
+name: 'INSO Project Metrics Generator'
+description: 'Generates project metrics from GitHub issues.'
+author: 'Alejandro Cruzado Ruiz'
+inputs:
+  gh-api-token:
+    description: 'GitHub Token with permissions to read issues.'
+    required: true
+  config-file:
+    description: 'Path to the configuration file in the repository.'
+    required: false
+    default: 'gh_metrics_config.json'
+runs:
+  using: 'composite'
+  steps:
+    - name: Checkout repo
+      uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    - name: Install dependencies
+      run: pip install -r requirements.txt
+      shell: bash
+    - name: Run metrics generator
+      run: python ./entrypoint.py
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ inputs.gh-api-token }}
