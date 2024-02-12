@@ -8,7 +8,7 @@ from getTeamMembers import get_team_members
 
 
 def main():
-    gh_api_token = os.getenv("GH_API_TOKEN")
+    gh_api_token = os.getenv("GITHUB_API_TOKEN")
     organization = os.getenv("ORGANIZATION_NAME")
     team = os.getenv("TEAM_NAME")
     managers = json.loads(os.getenv("MANAGERS"))
