@@ -36,6 +36,12 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - name: Checkout INSO GH Metrics code
+      uses: actions/checkout@v4
+      with:
+        repository: Poggecci/inso-gh-query-action
+        ref: v1 # Assuming v1 is the version you want to use
+        path: inso-gh-query-metrics
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
@@ -44,7 +50,7 @@ runs:
       run: pip install requests
       shell: bash
     - name: Run metrics generator
-      run: python ${{ github.workspace }}/entrypoint.py
+      run: python inso-gh-query-metrics/entrypoint.py
       shell: bash
       env:
         GITHUB_API_TOKEN: ${{ inputs.gh-api-token }}
