@@ -1,23 +1,62 @@
-name: 'INSO Project Metrics Generator'
-description: 'Generates project metrics from GitHub issues.'
-author: 'Alejandro Cruzado Ruiz'
+name: "INSO Project Metrics Generator"
+description: "Generates project metrics from GitHub issues."
+author: "Alejandro Cruzado Ruiz"
 
 inputs:
   gh-api-token:
-    description: 'GitHub Token with permissions to read issues.'
+    description: "GitHub Token with permissions to read issues."
     required: true
-  config-file:
-    description: 'Path to the configuration file in the repository.'
+  organization-name:
+    description: "Name of the Github Organization"
+    required: true
+  managers:
+    description: 'List of the Github usernames of the managers. Inputted as a JSON array. Example: ["Poggecci", "T4G"]'
     required: false
-    default: 'gh_metrics_config.json'
-
+    default: "[]"
+  team-name:
+    description: "Name of the project board with which all issues are associated with."
+    required: true
+  milestone-name:
+    description: 'Name of the milestone to have metrics generated for. Example: "Milestone #1"'
+    required: true
+  milestone-grade:
+    description: "Expected grade for the group portion of the milestone. Defaults to 100."
+    required: false
+    default: 100
+  milestone-start:
+    description: "Start date of the current milestone as a string in ISO 8601 format. Example: 2024-01-01"
+    required: false
+  milestone-end:
+    description: "End date of the current milestone as a string in ISO 8601 format. Example: 2024-01-01"
+    required: false
+  lecture-topic-task-quota:
+    description: "Number of lecture topic tasks expected to be completed for this milestone"
+    required: false
+    default: 4
 runs:
-  using: 'docker'
-  image: 'Dockerfile'
-  env:
-    GITHUB_API_TOKEN: ${{ inputs.gh-api-token }}
-    CONFIG_FILE: ${{ inputs.config-file }}
+  using: "composite"
+  steps:
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.11"
+    - name: Install dependencies
+      run: pip install -r requirements.txt
+      shell: bash
+    - name: Run metrics generator
+      run: python ./entrypoint.py
+      shell: bash
+      env:
+        GITHUB_API_TOKEN: ${{ inputs.gh-api-token }}
+        ORGANIZATION_NAME: ${{ inputs.organization-name }}
+        TEAM_NAME: ${{ inputs.team-name }}
+        MANAGERS: ${{ inputs.managers }}
+        MILESTONE_NAME: ${{ inputs.milestone-name }}
+        MILESTONE_GRADE: ${{ inputs.milestone-grade }}
+        MILESTONE_START: ${{ inputs.milestone-start }}
+        MILESTONE_END: ${{ inputs.milestone-end }}
+        LECTURE_TOPIC_TASK_QUOTA: ${{ inputs.lecture-topic-task-quota }}
 
 branding:
-  icon: 'bar-chart-2'
-  color: 'black'
+  icon: "bar-chart-2"
+  color: "black"

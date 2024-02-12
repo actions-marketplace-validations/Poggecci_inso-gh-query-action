@@ -24,12 +24,3 @@ def get_team_members(organization, team) -> list[str]:
     if len(teams) < 1:
         return []
     return [member["login"] for member in teams[0]["members"]["nodes"]]
-
-
-if __name__ == "__main__":
-    import sys
-
-    if len(sys.argv) < 3:
-        exit(0)
-    _, org, team, *_ = sys.argv
-    print(get_team_members(org, team))

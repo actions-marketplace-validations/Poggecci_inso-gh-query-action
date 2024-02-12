@@ -8,57 +8,50 @@ from getTeamMembers import get_team_members
 
 
 def main():
-    config_file = os.getenv("CONFIG_FILE")
     gh_api_token = os.getenv("GH_API_TOKEN")
+    organization = os.getenv("ORGANIZATION_NAME")
+    team = os.getenv("TEAM_NAME")
+    managers = json.loads(os.getenv("MANAGERS"))
+    milestone_name = os.getenv("MILESTONE_NAME")
+    milestone_grade = os.getenv("MILESTONE_GRADE")
+    milestone_starts_on = os.getenv("MILESTONE_STARTS_ON")
+    milestone_ends_on = os.getenv("MILESTONE_ENDS_ON")
 
     if not gh_api_token:
         print("GitHub API token is required.")
         exit(1)
-    with open(config_file) as course_config:
-        course_data = json.load(course_config)
-    organization = course_data["organization"]
-    teams_and_teamdata = course_data["teams"]
-    if (
-        course_data.get("milestoneStartsOn", None) is None
-        or not course_data["milestoneStartsOn"]
-        or course_data["milestoneStartsOn"] is None
-        or course_data.get("milestoneEndsOn", None) is None
-        or course_data["milestoneEndsOn"] is None
-        or not course_data["milestoneEndsOn"]
-    ):
+    if not organization:
+        print("GitHub API token is required.")
+        exit(1)
+    if not milestone_name:
+        print("GitHub API token is required.")
+        exit(1)
+    if milestone_starts_on is None or milestone_ends_on is None:
         startDate = datetime.now()
         endDate = datetime.now()
         useDecay = False
     else:
-        startDate = datetime.fromisoformat(course_data["milestoneStartsOn"])
-        endDate = datetime.fromisoformat(course_data["milestoneEndsOn"])
+        startDate = datetime.fromisoformat(milestone_starts_on)
+        endDate = datetime.fromisoformat(milestone_ends_on)
         useDecay = True
 
     print("Organization: ", organization)
 
     team_metrics = {}
-    for team, teamdata in teams_and_teamdata.items():
-        print("Team: ", team)
-        print("Managers: ", teamdata["managers"])
-        print("Milestone: ", teamdata["milestone"])
-        members = get_team_members(organization, team)
-        team_metrics[team] = getTeamMetricsForMilestone(
-            org=organization,
-            team=team,
-            milestone=teamdata["milestone"],
-            milestoneGrade=teamdata["milestoneGrade"],
-            members=members,
-            managers=teamdata["managers"],
-            startDate=startDate,
-            endDate=endDate,
-            useDecay=useDecay,
-        )
-        workspace_path = "/github/workspace"
-        # Combine the workspace path with the CSV file name
-        csv_file_path = f"{workspace_path}/{teamdata['milestone']}-{team}-{organization}.csv"
-        write_milestone_data_to_csv(
-            team_metrics[team], csv_file_path
-        )
+    members = get_team_members(organization, team)
+    team_metrics[team] = getTeamMetricsForMilestone(
+        org=organization,
+        team=team,
+        milestone=milestone_name,
+        milestoneGrade=milestone_grade,
+        members=members,
+        managers=managers,
+        startDate=startDate,
+        endDate=endDate,
+        useDecay=useDecay,
+    )
+    csv_file_path = f"{milestone_name}-{team}-{organization}.csv"
+    write_milestone_data_to_csv(team_metrics[team], csv_file_path)
 
 
 if __name__ == "__main__":
